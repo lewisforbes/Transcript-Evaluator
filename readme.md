@@ -1,3 +1,5 @@
+# [Direct Download](https://github.com/lewisforbes/Transcript-Evaluator/archive/refs/heads/main.zip)
+
 ### Attribution
 Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https://www.youtube.com/watch?v=93Z48ALaBSQ). \
 Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
