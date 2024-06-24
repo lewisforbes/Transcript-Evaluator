@@ -33,11 +33,10 @@ data_folder
 ...
 ```
 
-Video folders (`video1`, `video2` here) can have any name.
-
-Human transcript files must contain "human" in their filename.
-
-Service (AI) transcript files must contain the service name in the filename.
+Video folders (`video1`, `video2` here) can have any name. \
+Human transcript files must contain "human" in their filename. \
+Service (AI) transcript files must contain the service name in the filename. \
+Transcript files can be `.vtt` or `.srt`.
 
 
 ## Command Structure
