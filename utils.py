@@ -44,8 +44,8 @@ def get_bleu_score(gtrans, ctrans, adjust=0.41):
     # adjust score
     bleu = 1 - adjust + adjust*bleu # 1-((1-x)*a)
     
-    if bleu<0.00001: bleu = 0
-    
+    if bleu<0.0001: bleu = 0
+
     return bleu
 
 # returns true iff a file is a subtitle file
