@@ -6,6 +6,10 @@ Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https
 Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downloader/).
 
 
+---------------
+
+# Transcript Evaluator
+
 ## Overview
 This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
 It uses [BLEU score](https://en.wikipedia.org/wiki/BLEU) as a baseline, and applies a positive weighting based on experiments. See [`utils.get_bleu_score()`](/utils.py) for algorithm details.
