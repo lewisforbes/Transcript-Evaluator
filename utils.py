@@ -1,4 +1,5 @@
 from re import sub
+import re
 from os import path
 import os
 
@@ -27,6 +28,12 @@ def get_sub_contents(subtitle_fpath):
             
             if "-->" in line:
                 next = True
+
+
+    # TODO move in loop
+    # fix up output
+    output = re.sub("\[.+?\]", "", output) # remove speaker/context tags
+    output = re.sub("  +", " ", output) # remove multiple spaces
     return output
 
 

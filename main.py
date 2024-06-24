@@ -113,4 +113,7 @@ if __name__=="__main__":
     print(f"\nFinished. Wrote {len(output)} rows.")
     print("\nAverage Accuracies...")
     for s, data in scores_total.items():
-        print(f"{s}: {round(100*data[0]/data[1], 1)}%")
+        if data[1]==0:
+            print(f"{s}: N/A")
+        else: 
+            print(f"{s}: {round(100*data[0]/data[1], 1)}%")
