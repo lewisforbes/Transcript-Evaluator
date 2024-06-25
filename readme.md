@@ -52,6 +52,8 @@ After running, the file [results.csv](/results.csv) is created or overwritten. I
 | video1       | 0.9270238931830127 |                    |
 | video2       | 0.9085649807373941 | 0.8952361542394177 |
 
+------------
+
 ### Attribution
 Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https://www.youtube.com/watch?v=93Z48ALaBSQ). \
 Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
