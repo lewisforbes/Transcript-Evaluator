@@ -5,7 +5,7 @@ import os
 import sys
 
 from werpy import normalize
-from nltk.translate.bleu_score import corpus_bleu
+from jiwer import wer
 
 # hide annoying bleu warning when two corpora don't match anywhere
 import warnings
@@ -37,24 +37,12 @@ def get_sub_contents(subtitle_fpath):
     output = re.sub("  +", " ", output) # remove multiple spaces
     return output
 
-
-# calculates the bleu score between two transcripts.
+# calculates the word error rate (expressed as an accuracy) between two transcripts.
 # gtrans: generated transcript
 # ctrans: correct transcript
-def get_bleu_score(gtrans, ctrans, adjust=0.41):
-    # tokenize transcript
-    gtokens = normalize(gtrans).strip().split()
-    ctokens = normalize(ctrans).strip().split()
+def get_accuracy(gtrans, ctrans):
+    return 1 - wer(normalize(ctrans), normalize(gtrans))
 
-    # calculate bleu score
-    bleu = corpus_bleu([[ctokens]], [gtokens])
-
-    # adjust score
-    bleu = 1 - adjust + adjust*bleu # 1-((1-x)*a)
-    
-    if bleu<0.0001: bleu = 0 # fix floating point error
-
-    return bleu
 
 # returns true iff a file is a subtitle file
 def is_subtitle(fpath):

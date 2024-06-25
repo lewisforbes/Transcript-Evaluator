@@ -1,6 +1,12 @@
+### Attribution
+Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https://www.youtube.com/watch?v=93Z48ALaBSQ). \
+Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
+Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downloader/).
+
+
 ## Overview
 This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
-It uses [BLEU score](https://en.wikipedia.org/wiki/BLEU) as a baseline, and applies a positive weighting based on experiments. See [`utils.get_bleu_score()`](/utils.py) for algorithm details.
+It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate), as this was found to be a good predictor of human accuracy ratings for the same task.
 The program's intended use is to compare between services, not give precise accuracy scores to transcripts.
 
 ## Data Structure
@@ -47,15 +53,7 @@ Other flags:
 
 After running, the file [results.csv](/results.csv) is created or overwritten. It looks like this:
 
-| video folder | exampleservice     | anotherservice     |
-|--------------|--------------------|--------------------|
-| video1       | 0.9270238931830127 |                    |
-| video2       | 0.9085649807373941 | 0.8952361542394177 |
-
-------------
-
-### Attribution
-Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https://www.youtube.com/watch?v=93Z48ALaBSQ). \
-Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
-Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downloader/).
-
+| video folder | anotherservice   | exampleservice     |
+|--------------|------------------|--------------------|
+| video1       |                  | 0.9704595185995624 |
+| video2       | 0.95662100456621 | 0.9604261796042618 |
