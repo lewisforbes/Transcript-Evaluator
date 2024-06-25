@@ -119,7 +119,8 @@ if __name__=="__main__":
         except PermissionError:
             input("\nError: results.csv is open, close it and press enter to overwrite.\nAlternatively, press ctrl+C to quit.")
 
-    print(f"\nFinished. Wrote {len(output)} rows.")
+    s = "" if len(output)==2 else "s"
+    print(f"\nFinished. Found {len(output)-1} video{s}.")
     print("\nAverage Accuracies...")
     for s, data in scores_total.items():
         if data[1]==0:
