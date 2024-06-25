@@ -2,6 +2,7 @@ from re import sub
 import re
 from os import path
 import os
+import sys
 
 from werpy import normalize
 from nltk.translate.bleu_score import corpus_bleu
@@ -51,7 +52,7 @@ def get_bleu_score(gtrans, ctrans, adjust=0.41):
     # adjust score
     bleu = 1 - adjust + adjust*bleu # 1-((1-x)*a)
     
-    if bleu<0.0001: bleu = 0
+    if bleu<0.0001: bleu = 0 # fix floating point error
 
     return bleu
 
@@ -81,3 +82,8 @@ def contents_different(p1, p2):
     with open(p1, "r") as f1:
         with open(p2, "r") as f2:
             return f1.read()!=f2.read()
+        
+
+def error(msg):
+    print(f"Error: {msg}\n")
+    sys.exit()

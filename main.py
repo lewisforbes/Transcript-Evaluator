@@ -17,10 +17,10 @@ def mk_args():
     for i, s_i in enumerate(args.services):
         for j, s_j in enumerate(args.services):
             if (i!=j) and (s_i in s_j):
-                raise ValueError(f"service '{s_i}' is a substring or matches '{s_j}' which is not allowed. Ask Lewis to fix this.")
+                error(f"service '{s_i}' is a substring or matches '{s_j}' which is not allowed. Ask Lewis to fix this.")
     
     if args.adjust>1 or args.adjust<0:
-        raise argparse.ArgumentError("adjust must be between 0 and 1")
+        p.error("adjust must be between 0 and 1")
     
     if args.adjust!=default_adjust: print(f"Using adjust={args.adjust}")
     return args
@@ -37,21 +37,30 @@ def get_transcript_paths(d, args):
     human_fpath = None
     for fname in os.listdir(d):
         if is_subtitle(fname):
+            # find human transcript
             if "human" in fname:
                 # check for existing different file
                 if human_fpath and contents_different(human_fpath, join(d, fname)): 
-                    raise ValueError(f"too many human fpaths found in '{d}'.")
+                    error(f"Both '{path.basename(human_fpath)}' and '{fname}' refer to human transcripts in '{d}' but are different.")
                 human_fpath=join(d, fname)
             
+            # find service transcript(s)
             for s in services:
                 if s in fname:
                     # check for existing different file
                     if services[s]!="" and contents_different(services[s], join(d, fname)):
-                        raise ValueError(f"too many ai fpaths found in '{d}'.")
+                        error(f"Both '{path.basename(services[s])}' and '{fname}' refer to {s} transcripts in '{d}' but are different.")
                     services[s] = join(d, fname)
 
                     # check for file named as human and service
-                    if services[s]==human_fpath: raise ValueError(f"ambiguous filename '{fname}'.")
+                    if services[s]==human_fpath: error(f"ambiguous filename '{fname}'. Is it human or {s}?")
+
+    # check all fpaths (vals) in services are unique
+    for s_i, fp_i in services.items():
+        if fp_i=="": continue
+        for s_j, fp_j in services.items():
+            if s_i!=s_j and fp_i==fp_j: # services different files same
+                error(f"ambiguous file '{fp_i}'. Is it {s_i} or {s_j}?")
 
     return human_fpath, services
 
