@@ -8,7 +8,7 @@ def mk_args():
     default_adjust = 1
     p = argparse.ArgumentParser()
     p.add_argument("--data", "-d", type=str, help="path of directory containing data", required=True)
-    p.add_argument("--services", "-s", type=str, nargs="+", default=["verbit"], help="services to look for to evaluate")
+    p.add_argument("--services", "-s", type=str, nargs="+", default=["verbit", "speechmatics", "adobe"], help="services to look for to evaluate")
     p.add_argument("--numeric", "-n", action='store_true', help="ignore folders which have letters in their names within main data folder")
     p.add_argument("--adjust", "-a", type=float, default=default_adjust, help="the adjust constant (see utils.get_bleu_score()).")
     args = p.parse_args()
@@ -121,9 +121,12 @@ if __name__=="__main__":
 
     s = "" if len(output)==2 else "s"
     print(f"\nFinished. Found {len(output)-1} video{s}.")
+
+    # print average summary
     print("\nAverage Accuracies...")
+    max_len  = max([len(k) for k in scores_total])
     for s, data in scores_total.items():
         if data[1]==0:
-            print(f"{s}: N/A")
+            print(f"{s}{' '*(4+max_len-len(s))}N/A")
         else: 
-            print(f"{s}: {round(100*data[0]/data[1], 1)}%")
+            print(f"{s}{' '*(4+max_len-len(s))}{round(100*data[0]/data[1], 1)}%")
