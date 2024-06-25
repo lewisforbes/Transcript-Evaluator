@@ -1,14 +1,8 @@
-# [Direct Download](https://github.com/lewisforbes/Transcript-Evaluator/archive/refs/heads/main.zip)
-
 ### Attribution
 Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https://www.youtube.com/watch?v=93Z48ALaBSQ). \
 Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
 Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downloader/).
 
-
----------------
-
-# Transcript Evaluator
 
 ## Overview
 This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
@@ -33,10 +27,11 @@ data_folder
 ...
 ```
 
-Video folders (`video1`, `video2` here) can have any name. \
-Human transcript files must contain "human" in their filename. \
-Service (AI) transcript files must contain the service name in the filename. \
-Transcript files can be `.vtt` or `.srt`.
+Video folders (`video1`, `video2` here) can have any name.
+
+Human transcript files must contain "human" in their filename.
+
+Service (AI) transcript files must contain the service name in the filename.
 
 
 ## Command Structure
@@ -60,5 +55,5 @@ After running, the file [results.csv](/results.csv) is created or overwritten. I
 
 | video folder | exampleservice     | anotherservice     |
 |--------------|--------------------|--------------------|
-| video1       | 0.6926020332196337 |                    |
-| video2       | 0.6920103129471811 | 0.7385625396123279 |
+| video1       | 0.9270238931830127 |                    |
+| video2       | 0.9085649807373941 | 0.8952361542394177 |
