@@ -10,7 +10,7 @@ HUMAN = "human"
 def mk_args():
     p = argparse.ArgumentParser()
     if os.path.exists("data_folder"):
-        p.epilog = "Example command: python --data data_folder --service exampleservice anotherservice"
+        p.epilog = "Example command: python main.py --data data_folder --service exampleservice anotherservice"
         
     p.add_argument("--data", "-d", type=str, help="path of directory containing data", required=True)
     p.add_argument("--services", "-s", type=str, nargs="+", default=["verbit", "speechmatics", "adobe"], help="services to look for to evaluate")
