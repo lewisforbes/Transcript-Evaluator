@@ -1,7 +1,9 @@
-### Attribution
-Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https://www.youtube.com/watch?v=93Z48ALaBSQ). \
-Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
-Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downloader/).
+
+
+## Overview
+This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
+It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate), as this was found to be a good predictor of human accuracy ratings for the same task.
+The program's intended use is to compare between services, not give precise accuracy scores to transcripts.
 
 ## Installation
 1. Clone/[download](https://github.com/lewisforbes/Transcript-Evaluator/archive/refs/heads/main.zip) and unzip repo, open terminal in directory.
@@ -9,10 +11,6 @@ Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downl
 3. Verify installation: `python main.py`. If you get a NumPy error, run `pip uninstall numpy` **twice** and go to step 2.
 4. Run example command: `python main.py --data data_folder --service exampleservice anotherservice`.
 
-## Overview
-This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
-It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate), as this was found to be a good predictor of human accuracy ratings for the same task.
-The program's intended use is to compare between services, not give precise accuracy scores to transcripts.
 
 ## Data Structure
 The program relies on a data structured in a specific way to work.
@@ -56,9 +54,14 @@ Other flags:
 
 ## Output
 
-After running, the file [results.csv](/results.csv) is created or overwritten. It looks like this:
+After running installation step 4, the file [results.csv](/results.csv) is created or overwritten. It looks like this:
 
 | video folder | anotherservice   | exampleservice     |
 |--------------|------------------|--------------------|
 | video1       |                  | 0.9704595185995624 |
 | video2       | 0.95662100456621 | 0.9604261796042618 |
+
+### Attribution
+Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https://www.youtube.com/watch?v=93Z48ALaBSQ). \
+Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
+Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downloader/).
