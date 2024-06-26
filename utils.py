@@ -7,11 +7,6 @@ import sys
 from werpy import normalize
 from jiwer import wer
 
-# hide annoying bleu warning when two corpora don't match anywhere
-import warnings
-def nothing(*args): pass 
-warnings.warn = nothing
-
 # gets text content from a VTT or SRT file
 # https://github.com/lewisforbes/VTT-to-TXT
 def get_sub_contents(subtitle_fpath):
