@@ -68,6 +68,12 @@ def score(correct_fpath, generated_fpath):
     return get_accuracy(gtrans, ctrans)
 
 if __name__=="__main__":
+    if len(sys.argv)==1:
+        msg = "--- Installed correctly! ---"
+        print("-"*len(msg))
+        print(msg)
+        print("-"*len(msg), "\n")
+
     args = mk_args()
 
     # {service: [sum of score, count of scores]}
