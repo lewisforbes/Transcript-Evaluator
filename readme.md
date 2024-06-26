@@ -6,8 +6,8 @@ It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate), as thi
 The program's intended use is to compare between services, not give precise accuracy scores to transcripts.
 
 ## Installation
-1. Clone/[download](https://github.com/lewisforbes/Transcript-Evaluator/archive/refs/heads/main.zip) and unzip repo, open terminal in directory.
-2. `pip install -r requirements`.
+1. [Download](https://github.com/lewisforbes/Transcript-Evaluator/archive/refs/heads/main.zip) and unzip or clone repo, open terminal in directory.
+2. Install dependencies: `pip install -r requirements`. 
 3. Verify installation: `python main.py`. If you get a NumPy error, run `pip uninstall numpy` **twice** and go to step 2.
 4. Run example command: `python main.py --data data_folder --service exampleservice anotherservice`.
 
@@ -30,10 +30,8 @@ data_folder
 ...
 ```
 
-Video folders (`video1`, `video2` here) can have any name.
-
-Human transcript files must contain "human" in their filename.
-
+Video folders (`video1`, `video2` here) can have any name. \
+Human transcript files must contain "human" in their filename. \
 Service (AI) transcript files must contain the service name in the filename.
 
 
@@ -54,7 +52,7 @@ Other flags:
 
 ## Output
 
-After running installation step 4, the file [results.csv](/results.csv) is created or overwritten. It looks like this:
+After running, the file [results.csv](/results.csv) is created or overwritten. After installation step 4 it looks like this:
 
 | video folder | anotherservice   | exampleservice     |
 |--------------|------------------|--------------------|
