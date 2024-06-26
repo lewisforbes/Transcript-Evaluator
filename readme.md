@@ -3,6 +3,11 @@ Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https
 Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
 Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downloader/).
 
+## Installation
+1. Clone/[download](https://github.com/lewisforbes/Transcript-Evaluator/archive/refs/heads/main.zip) and unzip repo, open terminal in directory.
+2. `pip install -r requirements`.
+3. Verify installation: `python main.py`. If you get a NumPy error, run `pip uninstall numpy` **twice** and go to step 2.
+4. Run example command: `python main.py --data data_folder --service exampleservice anotherservice`.
 
 ## Overview
 This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
