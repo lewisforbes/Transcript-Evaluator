@@ -4,14 +4,27 @@ from os.path import join
 import argparse
 import csv
 
+# gold standard transcript identifier. must be lowercase.
+HUMAN = "human"
+
 def mk_args():
     p = argparse.ArgumentParser()
+    if os.path.exists("data_folder"):
+        p.epilog = "Example command: python --data data_folder --service exampleservice anotherservice"
+        
     p.add_argument("--data", "-d", type=str, help="path of directory containing data", required=True)
     p.add_argument("--services", "-s", type=str, nargs="+", default=["verbit", "speechmatics", "adobe"], help="services to look for to evaluate")
     p.add_argument("--numeric", "-n", action='store_true', help="ignore folders which have letters in their names within main data folder")
     args = p.parse_args()
 
+    # validate --data
+    if not os.path.exists(args.data): error(f"path '{args.data}' does not exist.")
+    if not os.path.isdir(args.data): error(f"path '{args.data}' is not a directory.")
+
     # validate services
+    args.services = [s.lower() for s in args.services] # for comparison
+    if HUMAN in args.services:
+        error(f'"{HUMAN}" is invalid service name. This is used to identify the human-written transcript.')
     for i, s_i in enumerate(args.services):
         for j, s_j in enumerate(args.services):
             if (i!=j) and (s_i in s_j):
@@ -30,9 +43,10 @@ def get_transcript_paths(d, args):
     # get transcipt filepaths
     human_fpath = None
     for fname in os.listdir(d):
+        fname = fname.lower()
         if is_subtitle(fname):
             # find human transcript
-            if "human" in fname:
+            if HUMAN in fname:
                 # check for existing different file
                 if human_fpath and contents_different(human_fpath, join(d, fname)): 
                     error(f"Both '{path.basename(human_fpath)}' and '{fname}' refer to human transcripts in '{d}' but are different.")
