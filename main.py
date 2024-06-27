@@ -134,14 +134,33 @@ if __name__=="__main__":
         except PermissionError:
             input("\nError: results.csv is open, close it and press enter to overwrite.\nAlternatively, press ctrl+C to quit.")
 
-    s = "" if len(output)==2 else "s"
-    print(f"\nFound {len(output)-1} video{s}, see: {join(os.getcwd(),results_fpath)}.")
+    if len(output)==1:
+        print("\nNo media found. Refer to readme for data structure information.") 
+    else:
+        print(f"\nFound {len(output)-1} media. See: {join(os.getcwd(),results_fpath)}.")
 
-    # print average summary
-    print("\nAverage Accuracies...")
-    max_len  = max([len(k) for k in scores_total])
-    for s, data in scores_total.items():
-        if data[1]==0:
-            print(f"{s}{' '*(4+max_len-len(s))}N/A")
-        else: 
-            print(f"{s}{' '*(4+max_len-len(s))}{round(100*data[0]/data[1], 1)}%")
+    if len(output)>1:
+        # print average summary
+        print("\nAverage Accuracies...")
+        max_len  = max([len(k) for k in scores_total])
+        for s, data in scores_total.items():
+            if data[1]==0:
+                print(f"{s}{' '*(4+max_len-len(s))}N/A")
+            else: 
+                print(f"{s}{' '*(4+max_len-len(s))}{round(100*data[0]/data[1], 1)}%")
+
+    # check if user might have put wrong folder
+    if len(output)==1 and len(list_video_dirs(args.data, num_only=False))==1:
+        cmd = "python"
+        data_next = False
+        for a in sys.argv:
+            if data_next:
+                subdir = os.listdir(args.data)[0]
+                subdir = f'"{subdir}"' if " " in subdir else subdir
+                cmd += " " + join(args.data, subdir)
+                data_next=False
+            else:
+                cmd += " " + a
+                if a in ["--data", "-d"]:
+                    data_next=True
+        print(f"But first try running: {cmd}\n")

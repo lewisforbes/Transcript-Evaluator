@@ -47,7 +47,7 @@ def is_subtitle(fpath):
 def list_video_dirs(data_dir, num_only):
     vid_dirs = [d for d in os.listdir(data_dir) if path.isdir(path.join(data_dir, d))]
     if len(vid_dirs)==0:
-        error(f"there are no subfolders in '{data_dir}.")
+        error(f"there are no subfolders in '{data_dir}'.")
     if not num_only:
         return [path.join(data_dir, vd) for vd in vid_dirs]
     
