@@ -40,7 +40,7 @@ An example command is: `python main.py --data data_folder --services service1 se
 
 Where...
 
-- `--data <path>` is path to the folder containing data, with correct [structure](#data-structure).
+- `--data <path>` is path to the folder containing data, with [correct structure](#data-structure).
 - `--services <s1> <s2> ...` are the names of the services present.
 
 Other flags:
