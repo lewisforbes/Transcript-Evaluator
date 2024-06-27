@@ -25,10 +25,10 @@ def mk_args():
     args.services = [s.lower() for s in args.services] # for comparison
     if HUMAN in args.services:
         error(f'"{HUMAN}" is invalid service name. This is used to identify the human-written transcript.')
-    for i, s_i in enumerate(args.services):
-        for j, s_j in enumerate(args.services):
+    for i, s_i in enumerate(args.services + [HUMAN]):
+        for j, s_j in enumerate(args.services + [HUMAN]):
             if (i!=j) and (s_i in s_j):
-                error(f"service '{s_i}' is a substring or matches '{s_j}' which is not allowed. Ask Lewis to fix this.")
+                error(f"service '{s_i}' is a substring or matches '{s_j}' which is not allowed.")
         
     return args
 
@@ -95,7 +95,7 @@ if __name__=="__main__":
     for s in args.services: scores_total[s] = [0, 0]
 
 
-    output = [["video folder"] + args.services] # init headers
+    output = [["media folder"] + args.services] # init headers
     
     # go through each subfolder containing data
     for dirpath in list_video_dirs(args.data, args.numeric):
