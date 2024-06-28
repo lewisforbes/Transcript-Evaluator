@@ -67,13 +67,10 @@ def list_video_dirs(data_dir, num_only):
 
 # returns true iff two file contents are different
 def contents_different(p1, p2):
-    if p1==p2: return False
-    return get_sub_contents(p1)!=get_sub_contents(p2)
-    
-    with open(p1, "r") as f1:
-        with open(p2, "r") as f2:
-            return get_sub_contents(f1.read())!=get_sub_contents(f2.read())
-        
+    if p1==p2: 
+        return False
+    else:
+        return get_sub_contents(p1)!=get_sub_contents(p2)
 
 def error(msg):
     print(f"Error: {msg}\n")
