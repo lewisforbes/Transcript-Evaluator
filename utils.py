@@ -1,5 +1,4 @@
 from re import sub
-import re
 from os import path
 import os
 import sys
@@ -8,13 +7,20 @@ import sys
 from werpy import normalize
 from jiwer import wer
 
-# gets text content from a VTT or SRT file
-# https://github.com/ lewisforbes/VTT-to-TXT
+# gets text content from a VTT or SRT file or return TXT body if applicable
+# https://github.com/lewisforbes/VTT-to-TXT
 def get_sub_contents(subtitle_fpath):
+    # raises error if contents empty
+    def verify(contents):
+        if contents.strip()=="":
+            error(f"'{subtitle_fpath}' is empty.")
+        else:
+            return contents
+
     with open(subtitle_fpath, "r", encoding='utf-8') as f:
         # return full body of text file
         if path.splitext(subtitle_fpath)[1]==".txt":
-            return sub(" +", " ", f.read().replace("\n", " ")) # remove multiple spaces
+            return verify(sub(" +", " ", f.read().replace("\n", " "))) # remove multiple spaces
         
         output = ""
         next = False
@@ -35,16 +41,16 @@ def get_sub_contents(subtitle_fpath):
     # fix up output
     output = sub("\[.+?\]", "", output) # remove speaker/context tags
     output = sub("  +", " ", output) # remove multiple spaces
-    return output
+    return verify(output)
 
-# calculates the word error rate (expressed as an accuracy) between two transcripts.
-# gtrans: generated transcript
-# ctrans: correct transcript
-def get_accuracy(gtrans, ctrans):
-    return 1 - min(1, wer(normalize(ctrans), normalize(gtrans))) # wer>1 possible (https://w.wiki/_sXTY)
+# returns true iff two file contents are different
+def contents_different(p1, p2):
+    if p1==p2: 
+        return False
+    else:
+        return get_sub_contents(p1)!=get_sub_contents(p2)
 
-
-# returns true iff a file is a subtitle file
+# returns true iff a file is a subtitle file (text files included)
 def is_subtitle(fpath):
     return path.splitext(fpath)[1] in [".txt", ".srt", ".vtt"]
 
@@ -53,9 +59,12 @@ def list_video_dirs(data_dir, num_only):
     vid_dirs = [d for d in os.listdir(data_dir) if path.isdir(path.join(data_dir, d))]
     if len(vid_dirs)==0:
         error(f"there are no subfolders in '{data_dir}'.")
+    
+    # non-numeric dirnames
     if not num_only:
         return [path.join(data_dir, vd) for vd in vid_dirs]
     
+    # numeric dirnames
     output = []
     for d in vid_dirs:
         try:
@@ -65,13 +74,7 @@ def list_video_dirs(data_dir, num_only):
             continue
     return output
 
-# returns true iff two file contents are different
-def contents_different(p1, p2):
-    if p1==p2: 
-        return False
-    else:
-        return get_sub_contents(p1)!=get_sub_contents(p2)
-
+# show error message and end execution
 def error(msg):
     print(f"Error: {msg}\n")
     sys.exit()

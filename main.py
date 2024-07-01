@@ -4,10 +4,13 @@ from os.path import join
 import argparse
 import csv
 
-# gold standard transcript identifier. must be lowercase.
+# gold standard transcript identifier in filename.
+# MUST BE LOWERCASE: filenames all .lower()'d in comparisons
 HUMAN = "human"
 
+# construct parser, return arguments
 def mk_args():
+    # make parser
     p = argparse.ArgumentParser()
     if os.path.exists("data_folder"):
         p.epilog = "Example command: python main.py --data data_folder --service exampleservice anotherservice"
@@ -23,8 +26,14 @@ def mk_args():
 
     # validate services
     args.services = [s.lower() for s in args.services] # for comparison
-    if HUMAN in args.services:
-        error(f'"{HUMAN}" is invalid service name. This is used to identify the human-written transcript.')
+    # HUMAN is substring of or equals a service
+    if True in [(HUMAN in s) for s in args.services]:
+        if HUMAN in args.services:
+            error(f'"{HUMAN}" is invalid service name. This is used to identify the human-written transcript.')
+        else: # human is substring of some service
+            error(f"service {[s for s in args.services if HUMAN in s][0]} contains '{HUMAN}' which is not allowed. This transcript would be recognised as human-written.")
+    
+    # service1 substring of service2 or of HUMAN
     for i, s_i in enumerate(args.services + [HUMAN]):
         for j, s_j in enumerate(args.services + [HUMAN]):
             if (i!=j) and (s_i in s_j):
@@ -72,14 +81,16 @@ def get_transcript_paths(d, args):
 
     return human_fpath, services
 
+
 # returns the accuracy of a generated transcript
-def score(correct_fpath, generated_fpath):
+def get_accuracy(correct_fpath, generated_fpath):
     # make transcripts
     ctrans = get_sub_contents(correct_fpath)
     gtrans = get_sub_contents(generated_fpath)
 
-    # caluclate and return bleu
-    return get_accuracy(gtrans, ctrans)
+    # caluclate and return wer (expressed as accuracy)
+    return 1 - min(1, wer(normalize(ctrans), normalize(gtrans))) # wer>1 possible (https://w.wiki/_sXTY)
+
 
 if __name__=="__main__":
     if len(sys.argv)==1:
@@ -110,7 +121,7 @@ if __name__=="__main__":
         for s, ai_fpath in services.items():
             if ai_fpath=="": output_line.append("")
             else: 
-                acc_score = score(human_fpath, ai_fpath)
+                acc_score = get_accuracy(human_fpath, ai_fpath)
                 if acc_score==0: print(f"Warning, following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
                 
                 # update scores_total
@@ -137,7 +148,8 @@ if __name__=="__main__":
     if len(output)==1:
         print("\nNo media found. Refer to readme for data structure information.") 
     else:
-        print(f"\nFound {len(output)-1} media. See: {join(os.getcwd(),results_fpath)}.")
+        s = "" if len(output)==2 else "s"
+        print(f"\nFound {len(output)-1} media item{s}. See: {join(os.getcwd(),results_fpath)}.")
 
     if len(output)>1:
         # print average summary
