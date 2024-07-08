@@ -94,38 +94,38 @@ def get_accuracy(correct_fpath, generated_fpath):
     return 1 - min(1, wer(normalize(ctrans), normalize(gtrans))) # wer>1 possible (https://w.wiki/_sXTY)
 
 
-## BLEU ##
+# ## BLEU ##
 # from nltk.translate.bleu_score import corpus_bleu
-def _get_accuracy(correct_fpath, generated_fpath):
-    try: args.temp
-    except:
-        print("Warning: using BLEU")
-        args.temp = None
-    # make transcripts
-    ctrans = get_sub_contents(correct_fpath)
-    gtrans = get_sub_contents(generated_fpath)
+# def get_accuracy(correct_fpath, generated_fpath):
+#     try: args.temp
+#     except:
+#         print("Warning: using BLEU")
+#         args.temp = None
+#     # make transcripts
+#     ctrans = get_sub_contents(correct_fpath)
+#     gtrans = get_sub_contents(generated_fpath)
 
-    ctokens = ctrans.strip().split()
-    gtokens = gtrans.strip().split()
+#     ctokens = ctrans.strip().split()
+#     gtokens = gtrans.strip().split()
 
-    return corpus_bleu([[ctokens]], [gtokens])
+#     return corpus_bleu([[ctokens]], [gtokens])
 
-## ROUGE ##
+# ## ROUGE ##
 # from rouge_score import rouge_scorer
-def _get_accuracy(correct_fpath, generated_fpath):
-    try: args.temp
-    except:
-        print("Warning: using ROUGE")
-        args.temp = None
+# def get_accuracy(correct_fpath, generated_fpath):
+#     try: args.temp
+#     except:
+#         print("Warning: using ROUGE")
+#         args.temp = None
 
 
-    # make transcripts
-    ctrans = get_sub_contents(correct_fpath)
-    gtrans = get_sub_contents(generated_fpath)
+#     # make transcripts
+#     ctrans = get_sub_contents(correct_fpath)
+#     gtrans = get_sub_contents(generated_fpath)
 
-    scorer = rouge_scorer.RougeScorer(['rouge4'], use_stemmer=True)
-    scores = scorer.score(ctrans, gtrans)
-    return scores['rouge4'].fmeasure
+#     scorer = rouge_scorer.RougeScorer(['rouge4'], use_stemmer=True)
+#     scores = scorer.score(ctrans, gtrans)
+#     return scores['rouge4'].fmeasure
 
 
 if __name__=="__main__":
