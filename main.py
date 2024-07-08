@@ -6,7 +6,7 @@ import csv
 
 # gold standard transcript identifier in filename.
 # MUST BE LOWERCASE: filenames all .lower()'d in comparisons
-HUMAN = "human"
+# HUMAN = "human"
 
 # construct parser, return arguments
 def mk_args():
@@ -18,6 +18,8 @@ def mk_args():
     p.add_argument("--data", "-d", type=str, help="path of directory containing data", required=True)
     p.add_argument("--services", "-s", type=str, nargs="+", default=["verbit", "speechmatics", "adobe"], help="services to look for to evaluate")
     p.add_argument("--numeric", "-n", action='store_true', help="ignore folders which have letters in their names within main data folder")
+    p.add_argument("--correct", "-c", type=str, default="human", help="keyword used to identify human (correct/gold standard) transcript")
+
     args = p.parse_args()
 
     # validate --data
@@ -26,19 +28,19 @@ def mk_args():
 
     # validate services
     args.services = [s.lower() for s in args.services] # for comparison
-    # HUMAN is substring of or equals a service
-    if True in [(HUMAN in s) for s in args.services]:
-        if HUMAN in args.services:
-            error(f'"{HUMAN}" is invalid service name. This is used to identify the human-written transcript.')
+    # args.correct is substring of or equals a service
+    if True in [(args.correct in s) for s in args.services]:
+        if args.correct in args.services:
+            error(f'"{args.correct}" is invalid service name. This is used to identify the human-written transcript.')
         else: # human is substring of some service
-            error(f"service {[s for s in args.services if HUMAN in s][0]} contains '{HUMAN}' which is not allowed. This transcript would be recognised as human-written.")
+            error(f"service {[s for s in args.services if args.correct in s][0]} contains '{args.correct}' which is not allowed. This transcript would be recognised as human-written.")
     
-    # service1 substring of service2 or of HUMAN
-    for i, s_i in enumerate(args.services + [HUMAN]):
-        for j, s_j in enumerate(args.services + [HUMAN]):
+    # service1 substring of service2 or of args.correct
+    for i, s_i in enumerate(args.services + [args.correct]):
+        for j, s_j in enumerate(args.services + [args.correct]):
             if (i!=j) and (s_i in s_j):
                 error(f"service '{s_i}' is a substring or matches '{s_j}' which is not allowed.")
-        
+
     return args
 
 # returns filepaths of transcripts in directory `d`
@@ -55,7 +57,7 @@ def get_transcript_paths(d, args):
         fname = fname.lower()
         if is_subtitle(fname):
             # find human transcript
-            if HUMAN in fname:
+            if args.correct in fname:
                 # check for existing different file
                 if human_fpath and contents_different(human_fpath, join(d, fname)): 
                     error(f"Both '{path.basename(human_fpath)}' and '{fname}' refer to human transcripts in '{d}' but are different.")
@@ -92,6 +94,40 @@ def get_accuracy(correct_fpath, generated_fpath):
     return 1 - min(1, wer(normalize(ctrans), normalize(gtrans))) # wer>1 possible (https://w.wiki/_sXTY)
 
 
+## BLEU ##
+from nltk.translate.bleu_score import corpus_bleu
+def _get_accuracy(correct_fpath, generated_fpath):
+    try: args.temp
+    except:
+        print("Warning: using BLEU")
+        args.temp = None
+    # make transcripts
+    ctrans = get_sub_contents(correct_fpath)
+    gtrans = get_sub_contents(generated_fpath)
+
+    ctokens = ctrans.strip().split()
+    gtokens = gtrans.strip().split()
+
+    return corpus_bleu([[ctokens]], [gtokens])
+
+## ROUGE ##
+from rouge_score import rouge_scorer
+def _get_accuracy(correct_fpath, generated_fpath):
+    try: args.temp
+    except:
+        print("Warning: using ROUGE")
+        args.temp = None
+
+
+    # make transcripts
+    ctrans = get_sub_contents(correct_fpath)
+    gtrans = get_sub_contents(generated_fpath)
+
+    scorer = rouge_scorer.RougeScorer(['rouge4'], use_stemmer=True)
+    scores = scorer.score(ctrans, gtrans)
+    return scores['rouge4'].fmeasure
+
+
 if __name__=="__main__":
     if len(sys.argv)==1:
         msg = "--- Installed correctly! ---"
@@ -122,7 +158,7 @@ if __name__=="__main__":
             if ai_fpath=="": output_line.append("")
             else: 
                 acc_score = get_accuracy(human_fpath, ai_fpath)
-                if acc_score==0: print(f"Warning, following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
+                if acc_score<0.3: print(f"Warning, following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
                 
                 # update scores_total
                 current = scores_total[s]

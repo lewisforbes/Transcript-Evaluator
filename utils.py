@@ -3,14 +3,20 @@ from os import path
 import os
 import sys
 
-# for get_accuracy()
-from werpy import normalize
-from jiwer import wer
+try:
+    # for get_accuracy()
+    from werpy import normalize
+    from jiwer import wer
+except ModuleNotFoundError:
+    if "python3" in sys.orig_argv[0]:
+        print("\nRunning with python3 is known to sometimes not work on managed laptops. Use python.")
+    print("Installation incomplete. Run: pip install -r requirements")
+    sys.exit()
 
 # gets text content from a VTT or SRT file or return TXT body if applicable
 # https://github.com/lewisforbes/VTT-to-TXT
 def get_sub_contents(subtitle_fpath):
-    # raises error if contents empty
+    # raises error if contents empty, otherwise returns contents
     def verify(contents):
         if contents.strip()=="":
             error(f"'{subtitle_fpath}' is empty.")
