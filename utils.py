@@ -23,7 +23,7 @@ def get_sub_contents(subtitle_fpath):
         else:
             return contents
 
-    with open(subtitle_fpath, "r", encoding='utf-8') as f:
+    with open(subtitle_fpath, "r", encoding='latin-1') as f:
         # return full body of text file
         if path.splitext(subtitle_fpath)[1]==".txt":
             return verify(sub(" +", " ", f.read().replace("\n", " "))) # remove multiple spaces
