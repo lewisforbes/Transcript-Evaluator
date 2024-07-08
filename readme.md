@@ -34,6 +34,8 @@ Video folders (`video1`, `video2` here) can have any name. \
 Human transcript files must contain "human" in their filename. \
 Service (AI) transcript files must contain the service name in the filename.
 
+Transcripts can either be `.srt`, `.vtt`, or `.txt`. The first two are converted to plaintext based on [VTT to TXT](https://github.com/lewisforbes/VTT-to-TXT/), and the latter is not converted (so assumed to be plaintext already).
+
 
 ## Command Structure
 An example command is: `python main.py --data data_folder --services service1 service2`.
