@@ -95,7 +95,7 @@ def get_accuracy(correct_fpath, generated_fpath):
 
 
 ## BLEU ##
-from nltk.translate.bleu_score import corpus_bleu
+# from nltk.translate.bleu_score import corpus_bleu
 def _get_accuracy(correct_fpath, generated_fpath):
     try: args.temp
     except:
@@ -111,7 +111,7 @@ def _get_accuracy(correct_fpath, generated_fpath):
     return corpus_bleu([[ctokens]], [gtokens])
 
 ## ROUGE ##
-from rouge_score import rouge_scorer
+# from rouge_score import rouge_scorer
 def _get_accuracy(correct_fpath, generated_fpath):
     try: args.temp
     except:
