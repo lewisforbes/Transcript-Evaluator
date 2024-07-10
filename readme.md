@@ -1,4 +1,5 @@
-
+## Python requirements
+As per [this issue comment](https://github.com/numpy/numpy/issues/24318#issuecomment-1662834406), this program requires Python 3.9-3.11 to run. It is tested on [3.11.4](https://www.python.org/downloads/release/python-3114/).
 
 ## Overview
 This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
