@@ -3,6 +3,7 @@
 # werpy requires numpy<2
 # specifying that here can cause both to remain installed and python to access v2
 # uninstall numpy completely and run `pip install -r requirements` if issues
+setuptools
 numpy==1.24.3
 jiwer==3.0.4
 werpy==2.1.2
