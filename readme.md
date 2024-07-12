@@ -54,6 +54,8 @@ Other flags:
 - `--quiet` supresses warnings but shows progress bar.
 - `--help` shows help information.
 
+*All flags can be shortened to just their first letter and a single hyphen, so `python main.py -d data_folder -s service1 service2` is equivalent to the example command above.*
+
 
 
 
