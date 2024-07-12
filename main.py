@@ -26,6 +26,8 @@ def mk_args():
     args.metric = args.metric.lower()
     if args.metric == "rougel": args.metric = "rougeL"
     if not metric_valid(args.metric):
+        if args.metric=="rouge":
+            print("Which ROUGE? Specify rougeL or rouge1, rouge2 etc.")
         error("--metric/-m must be one of 'wer', 'bleu', 'rougeL', 'rouge[1-9]'")
 
     # implement --quiet
