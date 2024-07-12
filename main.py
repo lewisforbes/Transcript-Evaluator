@@ -16,8 +16,12 @@ def mk_args():
     p.add_argument("--numeric", "-n", action='store_true', help="ignore folders which have letters in their names within main data folder")
     p.add_argument("--correct", "-c", type=str, default="human", help="keyword used to identify human (correct/gold standard) transcript")
     p.add_argument("--metric", "-m", type=str, default="wer", choices=["wer", "rouge", "bleu"], help="metric to use in evaluation. Must be wer, rouge or bleu. Default is wer.")
+    p.add_argument("--quiet", "-q", action='store_true', help="supresses warnings")
 
     args = p.parse_args()
+
+    # implement --quiet
+    Quiet.quiet = args.quiet
 
     # validate --data
     if not os.path.exists(args.data): error(f"path '{args.data}' does not exist.")
@@ -154,7 +158,7 @@ if __name__=="__main__":
             if ai_fpath=="": output_line.append("")
             else: 
                 acc_score = metrics.get_accuracy(human_fpath, ai_fpath, args)
-                if acc_score<0.3: print(f"Warning, following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
+                if acc_score<0.3: warning(f"following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
                 
                 # update scores_total
                 current = scores_total[s]
