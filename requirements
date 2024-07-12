@@ -5,5 +5,7 @@
 # uninstall numpy completely and run `pip install -r requirements` if issues
 setuptools
 numpy==1.24.3
-jiwer==3.0.4
+jiwer
 werpy==2.1.2
+rouge_score
+nltk
