@@ -1,7 +1,23 @@
-from re import sub
+from re import sub, match
 from os import path
 import os
 import sys
+
+## SAFE IMPORTING ##
+# from utils import * in other files
+try:
+    from jiwer import wer
+    from jiwer.transformations import wer_standardize
+    from nltk.translate.bleu_score import corpus_bleu
+    from rouge_score import rouge_scorer
+    from tqdm import tqdm
+except ModuleNotFoundError:
+    if "python3" in sys.orig_argv[0]:
+        print("\nRunning with `python3` or `py` is known to sometimes not work on managed laptops. Use `python`.")
+    print("Installation incomplete. Run: pip install -r requirements")
+    sys.exit()
+#####################
+
 
 # gets text content from a VTT or SRT file or return TXT body if applicable
 # https://github.com/lewisforbes/VTT-to-TXT
@@ -82,6 +98,12 @@ def list_video_dirs(data_dir, num_only):
             continue
     return output
 
+# validates args.metric
+def metric_valid(m):
+    if m in ["wer", "bleu"]: return True # rougel is edge case
+    if not (len(m)==6 and match("rouge[1-9L]", m)): return False # m is in [rougeL, rouge1, rouge2, ... , rouge9]
+    return True
+
 # show error message and end execution
 def error(msg):
     print(f"Error: {msg}\n")
@@ -96,6 +118,8 @@ def warning(msg):
 # Quiet.quiet is set in main.mk_args() and accessed in utils.warning()
 class Quiet:
     def __new__(cls):
-        if cls._instance is None:
+        if cls._instance is None: # None when first called
             cls._instance = super(Quiet, cls).__new__(cls)
         return cls._instance
+    
+

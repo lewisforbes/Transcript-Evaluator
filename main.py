@@ -4,6 +4,8 @@ from os.path import join
 import argparse
 import csv
 import metrics
+from shutil import get_terminal_size
+
 # construct parser, return arguments
 def mk_args():
     # make parser
@@ -15,10 +17,16 @@ def mk_args():
     p.add_argument("--services", "-s", type=str, nargs="+", default=["verbit", "speechmatics", "adobe"], help="services to look for to evaluate")
     p.add_argument("--numeric", "-n", action='store_true', help="ignore folders which have letters in their names within main data folder")
     p.add_argument("--correct", "-c", type=str, default="human", help="keyword used to identify human (correct/gold standard) transcript")
-    p.add_argument("--metric", "-m", type=str, default="wer", choices=["wer", "rouge", "bleu"], help="metric to use in evaluation. Must be wer, rouge or bleu. Default is wer.")
+    p.add_argument("--metric", "-m", type=str, default="wer", help="metric to use in evaluation. Must be wer, rouge or bleu. Default is wer.")
     p.add_argument("--quiet", "-q", action='store_true', help="supresses warnings")
 
     args = p.parse_args()
+
+    # validate --metric
+    args.metric = args.metric.lower()
+    if args.metric == "rougel": args.metric = "rougeL"
+    if not metric_valid(args.metric):
+        error("--metric/-m must be one of 'wer', 'bleu', 'rougeL', 'rouge[1-9]'")
 
     # implement --quiet
     Quiet.quiet = args.quiet
@@ -98,7 +106,8 @@ def write_output(output, args):
     ## SUMMARY TABLE ##
     if len(output)>1:
         # print average summary
-        print(f"\nAverage {args.metric.upper()} Accuracies...")
+        fmetric = f"ROUGE-{args.metric[-1]}" if "rouge" in args.metric else args.metric.upper()
+        print(f"\nAverage {fmetric} Accuracies...")
         max_len  = max([len(k) for k in scores_total])
         for s, data in scores_total.items():
             if data[1]==0:
@@ -144,8 +153,12 @@ if __name__=="__main__":
 
     output = [["media folder"] + args.services] # init headers
     
+    # warnings mess up progress bar
+    vid_dirs = list_video_dirs(args.data, args.numeric)
+    if Quiet.quiet: vid_dirs = tqdm(vid_dirs, ncols=(get_terminal_size().columns//2))
+
     # go through each subfolder containing data
-    for dirpath in list_video_dirs(args.data, args.numeric):
+    for dirpath in vid_dirs:
         human_fpath, services = get_transcript_paths(dirpath, args)
 
         # check human and ai exist
