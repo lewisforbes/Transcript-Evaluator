@@ -3,11 +3,7 @@ import os
 from os.path import join
 import argparse
 import csv
-
-# gold standard transcript identifier in filename.
-# MUST BE LOWERCASE: filenames all .lower()'d in comparisons
-# HUMAN = "human"
-
+import metrics
 # construct parser, return arguments
 def mk_args():
     # make parser
@@ -19,6 +15,7 @@ def mk_args():
     p.add_argument("--services", "-s", type=str, nargs="+", default=["verbit", "speechmatics", "adobe"], help="services to look for to evaluate")
     p.add_argument("--numeric", "-n", action='store_true', help="ignore folders which have letters in their names within main data folder")
     p.add_argument("--correct", "-c", type=str, default="human", help="keyword used to identify human (correct/gold standard) transcript")
+    p.add_argument("--metric", "-m", type=str, default="wer", choices=["wer", "rouge", "bleu"], help="metric to use in evaluation. Must be wer, rouge or bleu. Default is wer.")
 
     args = p.parse_args()
 
@@ -83,119 +80,34 @@ def get_transcript_paths(d, args):
 
     return human_fpath, services
 
-
-# returns the accuracy of a generated transcript
-def get_accuracy(correct_fpath, generated_fpath):
-    # make transcripts
-    ctrans = get_sub_contents(correct_fpath)
-    gtrans = get_sub_contents(generated_fpath)
-
-    # caluclate and return wer (expressed as accuracy)
-    return 1 - min(1, wer(normalize(ctrans), normalize(gtrans))) # wer>1 possible (https://w.wiki/_sXTY)
-
-
-# ## BLEU ##
-# from nltk.translate.bleu_score import corpus_bleu
-# def get_accuracy(correct_fpath, generated_fpath):
-#     try: args.temp
-#     except:
-#         print("Warning: using BLEU")
-#         args.temp = None
-#     # make transcripts
-#     ctrans = get_sub_contents(correct_fpath)
-#     gtrans = get_sub_contents(generated_fpath)
-
-#     ctokens = ctrans.strip().split()
-#     gtokens = gtrans.strip().split()
-
-#     return corpus_bleu([[ctokens]], [gtokens])
-
-# ## ROUGE ##
-# from rouge_score import rouge_scorer
-# def get_accuracy(correct_fpath, generated_fpath):
-#     try: args.temp
-#     except:
-#         print("Warning: using ROUGE")
-#         args.temp = None
-
-
-#     # make transcripts
-#     ctrans = get_sub_contents(correct_fpath)
-#     gtrans = get_sub_contents(generated_fpath)
-
-#     scorer = rouge_scorer.RougeScorer(['rouge4'], use_stemmer=True)
-#     scores = scorer.score(ctrans, gtrans)
-#     return scores['rouge4'].fmeasure
-
-
-if __name__=="__main__":
-    if len(sys.argv)==1:
-        msg = "--- Installed correctly! ---"
-        print("-"*len(msg))
-        print(msg)
-        print("-"*len(msg), "\n")
-
-    args = mk_args()
-
-    # {service: [sum of score, count of scores]}
-    scores_total = {}
-    for s in args.services: scores_total[s] = [0, 0]
-
-
-    output = [["media folder"] + args.services] # init headers
-    
-    # go through each subfolder containing data
-    for dirpath in list_video_dirs(args.data, args.numeric):
-        human_fpath, services = get_transcript_paths(dirpath, args)
-
-        # check human and ai exist
-        if not human_fpath or list(services.values())==["" for _ in services]:
-            continue
-
-        # calculate bleu score where applicable, create line for csv
-        output_line = [path.basename(dirpath)]
-        for s, ai_fpath in services.items():
-            if ai_fpath=="": output_line.append("")
-            else: 
-                acc_score = get_accuracy(human_fpath, ai_fpath)
-                if acc_score<0.3: print(f"Warning, following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
-                
-                # update scores_total
-                current = scores_total[s]
-                scores_total[s] = [current[0]+acc_score, current[1]+1]
-                
-                # add score current output row
-                output_line.append(acc_score)
-
-        assert len(output_line)==len(output[0]), f"line in output wrong length: {len(output_line)}, {len(output[0])}"
-        output.append(output_line) # add row to output csv
-
-
-    # write output
+# writes results file, prints summary table, gives info to user of output blank
+def write_output(output, args):
     results_fpath = "results.csv"
     while True:
         try:
             with open(results_fpath, "w") as f:
                 csv.writer(f, lineterminator="\n").writerows(output)
-                break
+                break # while True
         except PermissionError:
             input("\nError: results.csv is open, close it and press enter to overwrite.\nAlternatively, press ctrl+C to quit.")
 
-    if len(output)==1:
-        print("\nNo media found. Refer to readme for data structure information.") 
-    else:
-        s = "" if len(output)==2 else "s"
-        print(f"\nFound {len(output)-1} media item{s}. See: {join(os.getcwd(),results_fpath)}.")
-
+    ## SUMMARY TABLE ##
     if len(output)>1:
         # print average summary
-        print("\nAverage Accuracies...")
+        print(f"\nAverage {args.metric.upper()} Accuracies...")
         max_len  = max([len(k) for k in scores_total])
         for s, data in scores_total.items():
             if data[1]==0:
                 print(f"{s}{' '*(4+max_len-len(s))}N/A")
             else: 
                 print(f"{s}{' '*(4+max_len-len(s))}{round(100*data[0]/data[1], 1)}%")
+
+    ## NO INFO IN OUTPT ##
+    if len(output)==1:
+        print("\nNo media found. Refer to readme for data structure information.") 
+    else:
+        s = "" if len(output)==2 else "s"
+        print(f"\nFound {len(output)-1} media item{s}. See: {join(os.getcwd(),results_fpath)}.")
 
     # check if user might have put wrong folder
     if len(output)==1 and len(list_video_dirs(args.data, num_only=False))==1:
@@ -212,3 +124,47 @@ if __name__=="__main__":
                 if a in ["--data", "-d"]:
                     data_next=True
         print(f"But first try running: {cmd}\n")
+
+
+if __name__=="__main__":
+    # installation message 
+    if len(sys.argv)==1:
+        msg = "--- Installed correctly! ---"
+        print(f"{'-'*len(msg)}\n{msg}\n{'-'*len(msg)}\n")
+
+    args = mk_args()
+
+    # {service: [sum of score, count of scores]}
+    scores_total = {}
+    for s in args.services: scores_total[s] = [0, 0]
+
+    output = [["media folder"] + args.services] # init headers
+    
+    # go through each subfolder containing data
+    for dirpath in list_video_dirs(args.data, args.numeric):
+        human_fpath, services = get_transcript_paths(dirpath, args)
+
+        # check human and ai exist
+        if not human_fpath or list(services.values())==["" for _ in services]:
+            continue
+
+        # calculate accuracy where applicable, create line for csv
+        output_line = [path.basename(dirpath)]
+        for s, ai_fpath in services.items():
+            if ai_fpath=="": output_line.append("")
+            else: 
+                acc_score = metrics.get_accuracy(human_fpath, ai_fpath, args)
+                if acc_score<0.3: print(f"Warning, following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
+                
+                # update scores_total
+                current = scores_total[s]
+                scores_total[s] = [current[0]+acc_score, current[1]+1]
+                
+                # add score current output row
+                output_line.append(acc_score)
+
+        assert len(output_line)==len(output[0]), f"line in output wrong length: {len(output_line)}, {len(output[0])}"
+        output.append(output_line) # add row to output csv
+
+    write_output(output, args)
+   

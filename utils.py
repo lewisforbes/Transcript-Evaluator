@@ -3,51 +3,53 @@ from os import path
 import os
 import sys
 
-try:
-    # for get_accuracy()
-    from werpy import normalize
-    from jiwer import wer
-except ModuleNotFoundError:
-    if "python3" in sys.orig_argv[0]:
-        print("\nRunning with python3 is known to sometimes not work on managed laptops. Use python.")
-    print("Installation incomplete. Run: pip install -r requirements")
-    sys.exit()
-
 # gets text content from a VTT or SRT file or return TXT body if applicable
 # https://github.com/lewisforbes/VTT-to-TXT
+# this function looks conufusing but it's just a wrapper for _get_sub_contents()
+# verify() is just assert contents!=""
 def get_sub_contents(subtitle_fpath):
-    # raises error if contents empty, otherwise returns contents
-    def verify(contents):
-        if contents.strip()=="":
-            error(f"'{subtitle_fpath}' is empty.")
-        else:
-            return contents
+    # main function. used to try both encodings
+    def _get_sub_contents(subtitle_fpath, encoding):
+        # raises error if contents empty, otherwise returns contents
+        def verify(contents):
+            if contents.strip()=="":
+                error(f"'{subtitle_fpath}' is empty.")
+            else:
+                return contents
 
-    with open(subtitle_fpath, "r", encoding='latin-1') as f:
-        # return full body of text file
-        if path.splitext(subtitle_fpath)[1]==".txt":
-            return verify(sub(" +", " ", f.read().replace("\n", " "))) # remove multiple spaces
-        
-        output = ""
-        next = False
-        for line in f:
-            if next:
-                if line=="\n":
-                    next = False
-                    continue
-                line = sub("<[^>]*>", "", line) # remove tags
-                output += line.replace("\n", "") + " "
-                continue
+
+        with open(subtitle_fpath, "r", encoding=encoding) as f:
+            # return full body of text file
+            if path.splitext(subtitle_fpath)[1]==".txt":
+                return verify(sub(" +", " ", f.read().replace("\n", " "))) # remove multiple spaces
             
-            if "-->" in line:
-                next = True
+            output = ""
+            next = False
+            for line in f:
+                if next:
+                    if line=="\n":
+                        next = False
+                        continue
+                    line = sub("<[^>]*>", "", line) # remove tags
+                    output += line.replace("\n", "") + " "
+                    continue
+                
+                if "-->" in line:
+                    next = True
 
+        # TODO move in loop
+        # fix up output
+        output = sub("\[.+?\]", "", output) # remove speaker/context tags
+        output = sub("  +", " ", output) # remove multiple spaces
+        return verify(output)
 
-    # TODO move in loop
-    # fix up output
-    output = sub("\[.+?\]", "", output) # remove speaker/context tags
-    output = sub("  +", " ", output) # remove multiple spaces
-    return verify(output)
+    # utf-8 can lead to error http://bit.ly/3Wjd479
+    # latin-1 can't decode some characters (such as —) but doesn't throw error 
+    try:
+        return _get_sub_contents(subtitle_fpath, "utf-8")
+    except UnicodeDecodeError:
+        print(f"Warning: using latin-1 encoding for {subtitle_fpath}. Accuracy scores may be lower they should be for this file.")
+        return _get_sub_contents(subtitle_fpath, "latin-1")
 
 # returns true iff two file contents are different
 def contents_different(p1, p2):
@@ -56,7 +58,7 @@ def contents_different(p1, p2):
     else:
         return get_sub_contents(p1)!=get_sub_contents(p2)
 
-# returns true iff a file is a subtitle file (text files included)
+# returns true iff a file is a subtitle or text file
 def is_subtitle(fpath):
     return path.splitext(fpath)[1] in [".txt", ".srt", ".vtt"]
 
