@@ -51,7 +51,7 @@ Other flags:
 - `--numeric` ignores folders within the `--data` folder that have non-numeric characters in their names. 
 - `--metric` specifies how accuracy scores are created. Options are [WER](https://en.wikipedia.org/wiki/Word_error_rate), [BLEU](https://en.wikipedia.org/wiki/BLEU) or [ROUGEX](https://en.wikipedia.org/wiki/ROUGE_(metric)) (X is 1-9 or L), default is WER.
 - `--correct` sets the keyword to look for in the gold standard transcript filenames. Default is "human".
-- `--quiet` supresses warnings.
+- `--quiet` supresses warnings but shows progress bar.
 - `--help` shows help information.
 
 
