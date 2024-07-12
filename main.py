@@ -24,11 +24,11 @@ def mk_args():
 
     # validate --metric
     args.metric = args.metric.lower()
-    if args.metric == "rougel": args.metric = "rougeL"
+    if args.metric.startswith("rougel"): args.metric = "rougeL"+args.metric[6:] # format rougeL and rougeLsum
     if not metric_valid(args.metric):
         if args.metric=="rouge":
-            print("Which ROUGE? Specify rougeL or rouge1, rouge2 etc.")
-        error("--metric/-m must be one of 'wer', 'bleu', 'rougeL', 'rouge[1-9]'")
+            print("Which ROUGE? Specify rougeL/rougeLsum or rouge1, rouge2 etc.")
+        error("--metric/-m must be one of 'wer', 'bleu', 'rougeL', 'rougeLsum', 'rouge[1-9]'")
 
     # implement --quiet
     Quiet.quiet = args.quiet
@@ -107,8 +107,15 @@ def write_output(output, args):
 
     ## SUMMARY TABLE ##
     if len(output)>1:
+        # format metric
+        if args.metric=="rougeL":
+            fmetric = "ROUGE-L (sentence-level)"
+        elif args.metric=="rougeLsum":
+            fmetric = "ROUGE-L (summary-level)"
+        else: # ROUGE-N and everything else
+            fmetric = f"ROUGE-{args.metric[-1]}" if "rouge" in args.metric else args.metric.upper() 
+
         # print average summary
-        fmetric = f"ROUGE-{args.metric[-1]}" if "rouge" in args.metric else args.metric.upper()
         print(f"\nAverage {fmetric} Accuracies...")
         max_len  = max([len(k) for k in scores_total])
         for s, data in scores_total.items():

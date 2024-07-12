@@ -100,9 +100,9 @@ def list_video_dirs(data_dir, num_only):
 
 # validates args.metric
 def metric_valid(m):
-    if m in ["wer", "bleu"]: return True # rougel is edge case
-    if not (len(m)==6 and match("rouge[1-9L]", m)): return False # m is in [rougeL, rouge1, rouge2, ... , rouge9]
-    return True
+    if m in ["wer", "bleu", "rougeLsum"]: return True
+    if len(m)==6 and match("rouge[1-9L]", m): return True # m is in [rougeL, rouge1, rouge2, ... , rouge9]
+    return False
 
 # show error message and end execution
 def error(msg):
