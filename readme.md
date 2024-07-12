@@ -3,7 +3,7 @@ As per [this issue comment](https://github.com/numpy/numpy/issues/24318#issuecom
 
 ## Overview
 This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
-It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate), as this was found to be a good predictor of human accuracy ratings for the same task.
+It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate) as default as this was found to be a good predictor of human accuracy ratings for the same task. The [`--metric`](#command-structure) flag can be used to change this.
 The program's intended use is to compare between services, not give precise accuracy scores to transcripts.
 
 ## Installation
@@ -32,7 +32,7 @@ data_folder
 ```
 
 Video folders (`video1`, `video2` here) can have any name. \
-Human transcript files must contain "human" in their filename. \
+Human transcript files must contain "human" in their filename (unless [`--correct`](#command-structure) is used). \
 Service (AI) transcript files must contain the service name in the filename.
 
 Transcripts can either be `.srt`, `.vtt`, or `.txt`. The first two are converted to plaintext based on [VTT to TXT](https://github.com/lewisforbes/VTT-to-TXT/), and the latter is not converted (so assumed to be plaintext already).
@@ -49,7 +49,10 @@ Where...
 Other flags:
 
 - `--numeric` ignores folders within the `--data` folder that have non-numeric characters in their names. 
+- `--metric` specifies how accuracy scores are created. Options are [WER](https://en.wikipedia.org/wiki/Word_error_rate), [BLEU](https://en.wikipedia.org/wiki/BLEU) or [ROUGE](https://en.wikipedia.org/wiki/ROUGE_(metric)), default is WER.
+- `--correct` sets the keyword to look for in the gold standard transcript filenames. Default is "human".
 - `--help` shows help information.
+
 
 
 
