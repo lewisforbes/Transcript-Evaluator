@@ -1,6 +1,6 @@
 # PIP REQUIREMENTS
-setuptools
-jiwer
-rouge_score
-nltk
+setuptools # sometimes needed idk
+jiwer # WER
+rouge_score # ROUGE
+nltk # BLEU
 tqdm

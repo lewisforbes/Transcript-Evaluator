@@ -164,7 +164,7 @@ if __name__=="__main__":
     
     # warnings mess up progress bar
     vid_dirs = list_video_dirs(args.data, args.numeric)
-    if Quiet.quiet: vid_dirs = tqdm(vid_dirs, ncols=(min(110, get_terminal_size().columns)-2), ascii=" █")
+    if Quiet.quiet: vid_dirs = tqdm(vid_dirs, ncols=(min(110, get_terminal_size().columns)-2), ascii=" █") # ascii param to fix [?] char showing on windows terminal
 
     # go through each subfolder containing data
     for dirpath in vid_dirs:

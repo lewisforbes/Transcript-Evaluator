@@ -13,8 +13,16 @@ try:
     from tqdm import tqdm
 except ModuleNotFoundError:
     if "python3" in sys.orig_argv[0]:
-        print("\nRunning with `python3` or `py` is known to sometimes not work on managed laptops. Use `python`.")
-    print("Installation incomplete. Run: pip install -r requirements")
+        print("\nRunning with `python3` or `py` is known to sometimes not work on managed laptops. Try using `python`.")
+
+    # ask user if they want to run pip install
+    cmd = "pip install -r requirements -q"
+    print(f"Installation incomplete.\nRun installation command `{cmd}`?", end="")
+    if input(" [y/N] > ").lower().strip() in ["y", "yes"]:
+        # yes
+        print("Running command...")
+        os.system(cmd)
+    print("Exiting.") # shown after installation command too
     sys.exit()
 #####################
 
@@ -37,7 +45,7 @@ def get_sub_contents(subtitle_fpath):
         with open(subtitle_fpath, "r", encoding=encoding) as f:
             # return full body of text file
             if path.splitext(subtitle_fpath)[1]==".txt":
-                return verify(sub(" +", " ", f.read().replace("\n", " "))) # remove multiple spaces
+                return verify(sub(r" +", " ", f.read().replace("\n", " "))) # remove multiple spaces
             
             output = ""
             next = False
@@ -46,17 +54,15 @@ def get_sub_contents(subtitle_fpath):
                     if line=="\n":
                         next = False
                         continue
-                    line = sub("<[^>]*>", "", line) # remove tags
+                    line = sub(r"<[^>]*>", "", line) # remove <tags>
+                    line = sub(r"\[[^\]]*\]", "", line) # remove [tags]
+                    line = sub(r"  +", " ", line) # remove multiple spaces
                     output += line.replace("\n", "") + " "
                     continue
                 
                 if "-->" in line:
                     next = True
 
-        # TODO move in loop
-        # fix up output
-        output = sub("\[.+?\]", "", output) # remove speaker/context tags
-        output = sub("  +", " ", output) # remove multiple spaces
         return verify(output)
 
     # utf-8 can lead to error http://bit.ly/3Wjd479
@@ -101,7 +107,7 @@ def list_video_dirs(data_dir, num_only):
 # validates args.metric
 def metric_valid(m):
     if m in ["wer", "bleu", "rougeLsum"]: return True
-    if len(m)==6 and match("rouge[1-9L]", m): return True # m is in [rougeL, rouge1, rouge2, ... , rouge9]
+    if len(m)==6 and match(r"rouge[1-9L]", m): return True # m is in [rougeL, rouge1, rouge2, ... , rouge9]
     return False
 
 # show error message and end execution

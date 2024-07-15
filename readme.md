@@ -1,6 +1,3 @@
-## Python requirements
-As per [this issue comment](https://github.com/numpy/numpy/issues/24318#issuecomment-1662834406), this program requires Python 3.9-3.11 to run. It is tested on [3.11.4](https://www.python.org/downloads/release/python-3114/).
-
 ## Overview
 This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
 It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate) as default as this was found to be a good predictor of human accuracy ratings for the same task. The [`--metric`](#command-structure) flag can be used to change this.
@@ -9,7 +6,7 @@ The program's intended use is to compare between services, not give precise accu
 ## Installation
 1. [Download](https://github.com/lewisforbes/Transcript-Evaluator/archive/refs/heads/main.zip) and unzip or clone repo, open terminal in directory.
 2. Install dependencies: `pip install -r requirements`. 
-3. Verify installation: `python main.py`. If you get a NumPy error, run `pip uninstall numpy` **twice** and go to step 2.
+3. Verify installation: `python main.py`.
 4. Run example command: `python main.py --data data_folder --service service1 service2`.
 
 
