@@ -9,6 +9,8 @@ The program's intended use is to compare between services, not give precise accu
 3. Verify installation: `python main.py`.
 4. Run example command: `python main.py --data data_folder --service service1 service2`.
 
+See [instructions](/instructions.pdf) for more depth if required.
+
 
 ## Data Structure
 The program relies on a data structured in a specific way to work.
