@@ -132,6 +132,7 @@ def write_output(output, args):
         print(f"\nFound {len(output)-1} media item{s}. See: {join(os.getcwd(),results_fpath)}.")
 
     # check if user might have put wrong folder
+    # initiate this by moving `data_folder` to new dir `test` and run `python main.py -d test`
     if len(output)==1 and len(list_video_dirs(args.data, num_only=False))==1:
         cmd = "python"
         data_next = False
@@ -145,7 +146,7 @@ def write_output(output, args):
                 cmd += " " + a
                 if a in ["--data", "-d"]:
                     data_next=True
-        print(f"But first try running: {cmd}\n")
+        print(f"But first try running: {cmd}")
 
 
 if __name__=="__main__":
@@ -180,13 +181,14 @@ if __name__=="__main__":
             if ai_fpath=="": output_line.append("")
             else: 
                 acc_score = metrics.get_accuracy(human_fpath, ai_fpath, args)
-                if acc_score<0.3: warning(f"following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
+                if acc_score < 0.3: # arbitrary hard-coded value
+                    warning(f"following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
                 
                 # update scores_total
                 current = scores_total[s]
                 scores_total[s] = [current[0]+acc_score, current[1]+1]
                 
-                # add score current output row
+                # add score to current output row
                 output_line.append(acc_score)
 
         assert len(output_line)==len(output[0]), f"line in output wrong length: {len(output_line)}, {len(output[0])}"

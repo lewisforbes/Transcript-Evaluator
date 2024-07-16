@@ -4,7 +4,7 @@ import os
 import sys
 
 ## SAFE IMPORTING ##
-# from utils import * in other files
+# `from utils import *` in other files
 try:
     from jiwer import wer
     from jiwer.transformations import wer_standardize
@@ -20,7 +20,7 @@ except ModuleNotFoundError:
     print(f"Installation incomplete.\nRun installation command `{cmd}`?", end="")
     if input(" [y/N] > ").lower().strip() in ["y", "yes"]:
         # yes
-        print("Running command...")
+        print("Running command (may take a few minutes)...")
         os.system(cmd)
     print("Exiting.") # shown after installation command too
     sys.exit()
@@ -120,12 +120,10 @@ def warning(msg):
     if not Quiet.quiet: 
         print(f"Warning: {msg}")
 
-# singleton class for --quiet
+# singleton class for --quiet to enable global var
 # Quiet.quiet is set in main.mk_args() and accessed in utils.warning()
 class Quiet:
     def __new__(cls):
         if cls._instance is None: # None when first called
             cls._instance = super(Quiet, cls).__new__(cls)
         return cls._instance
-    
-
