@@ -94,7 +94,7 @@ def get_transcript_paths(d, args):
 
     return human_fpath, services
 
-# writes results file, prints summary table, gives info to user of output blank
+# writes results file, prints summary table, gives info to user if output blank
 def write_output(output, args):
     results_fpath = "results.csv"
     while True:
