@@ -33,7 +33,7 @@ def mk_args():
             print("Which ROUGE? Specify rougeL/rougeLsum or rouge1, rouge2 etc.")
         error("--metric/-m must be one of 'wer', 'bleu', 'rougeL', 'rougeLsum', 'rouge[1-9]'")
 
-    Warning().showing = not args.quiet
+    Warning().quiet = args.quiet
 
     # validate --data
     if not os.path.exists(args.data): error(f"path '{args.data}' does not exist.")
