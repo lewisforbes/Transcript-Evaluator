@@ -1,6 +1,6 @@
 ## Overview
 This program automates the accuracy testing of transcripts, given a human-written correct transcript. 
-It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate) as default as this was found to be a good predictor of human accuracy ratings for the same task. The [`--metric`](#command-structure) flag can be used to change this.
+It uses [Word Error Rate](https://en.wikipedia.org/wiki/Word_error_rate) as default as this was found to be a good predictor of human accuracy ratings for the same task, and runs quickly. The [`--metric`](#command-structure) flag can be used to change this.
 The program's intended use is to compare between services, not give precise accuracy scores to transcripts.
 
 ## Installation
