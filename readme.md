@@ -50,7 +50,7 @@ Other flags:
 - `--numeric` ignores folders within the `--data` folder that have non-numeric characters in their names. 
 - `--metric` specifies how accuracy scores are created. Options are "[wer](https://en.wikipedia.org/wiki/Word_error_rate)", "[bleu](https://en.wikipedia.org/wiki/BLEU)" or a [rouge](https://en.wikipedia.org/wiki/ROUGE_(metric)) varient: "rouge1", ... , "rouge9", "rougeL" or "[rougeLsum](https://github.com/google-research/google-research/tree/master/rouge#two-flavors-of-rouge-l)". Default is "wer".
 - `--correct` sets the keyword to look for in the gold standard transcript filenames. Default is "human".
-- `--quiet` supresses warnings but shows progress bar.
+- `--quiet` supresses all non-error output.
 - `--help` shows help information.
 
 *All flags can be shortened to just their first letter and a single hyphen, so `python main.py -d data_folder -s service1 service2` is equivalent to the example command above.*
