@@ -70,7 +70,7 @@ def get_sub_contents(subtitle_fpath):
     try:
         return _get_sub_contents(subtitle_fpath, "utf-8")
     except UnicodeDecodeError:
-        warning(f"using latin-1 encoding for {subtitle_fpath}. Accuracy scores may be lower they should be for this file.")
+        warning(f"using latin-1 encoding for '{subtitle_fpath}'. Accuracy scores may be lower they should be for this file.")
         return _get_sub_contents(subtitle_fpath, "latin-1")
 
 # returns true iff two file contents are different
@@ -115,15 +115,32 @@ def error(msg):
     print(f"Error: {msg}\n")
     sys.exit()
 
-# shows warning message if not args.quiet
-def warning(msg):
-    if not Quiet.quiet: 
-        print(f"Warning: {msg}")
 
-# singleton class for --quiet to enable global var
-# Quiet.quiet is set in main.mk_args() and accessed in utils.warning()
-class Quiet:
-    def __new__(cls):
-        if cls._instance is None: # None when first called
-            cls._instance = super(Quiet, cls).__new__(cls)
+# used to store and then display warnings throughout execution
+# pointless wrapper bc it looks nicer
+def warning(msg): Warning().warning(msg)
+# actual class
+class Warning:
+    _instance=None
+    def __new__(cls): # singleton
+        if cls._instance is None:
+            cls._instance = super(Warning, cls).__new__(cls)
+
+            # attribute init
+            cls._instance.warnings = []
+            cls._instance.quiet = None # args.quiet
+
         return cls._instance
+
+    # add warning to be shown later
+    def warning(self, msg):
+        if not self.quiet:
+            msg = msg.strip()
+            self.warnings.append(msg[0].upper() + msg[1:])
+    
+    # print warnings to console
+    def show_warnings(self):
+        if not self.quiet:
+            print("\nWarnings during execution:")
+            for w in self.warnings:
+                print(f"- {w}")

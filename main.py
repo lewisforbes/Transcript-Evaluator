@@ -6,6 +6,9 @@ import csv
 import metrics
 from shutil import get_terminal_size
 
+###########
+# helpers #
+###########
 # construct parser, return arguments
 def mk_args():
     # make parser
@@ -30,8 +33,7 @@ def mk_args():
             print("Which ROUGE? Specify rougeL/rougeLsum or rouge1, rouge2 etc.")
         error("--metric/-m must be one of 'wer', 'bleu', 'rougeL', 'rougeLsum', 'rouge[1-9]'")
 
-    # implement --quiet
-    Quiet.quiet = args.quiet
+    Warning().showing = not args.quiet
 
     # validate --data
     if not os.path.exists(args.data): error(f"path '{args.data}' does not exist.")
@@ -116,18 +118,19 @@ def write_output(output, args):
             fmetric = f"ROUGE-{args.metric[-1]}" if "rouge" in args.metric else args.metric.upper() 
 
         # print average summary
-        print(f"\nAverage {fmetric} Accuracies...")
-        max_len  = max([len(k) for k in scores_total])
-        for s, data in scores_total.items():
-            if data[1]==0:
-                print(f"{s}{' '*(4+max_len-len(s))}N/A")
-            else: 
-                print(f"{s}{' '*(4+max_len-len(s))}{round(100*data[0]/data[1], 1)}%")
+        if not args.quiet:
+            print(f"\nAverage {fmetric} Accuracies...")
+            max_len  = max([len(k) for k in scores_total])
+            for s, data in scores_total.items():
+                if data[1]==0:
+                    print(f"{s}{' '*(4+max_len-len(s))}N/A")
+                else: 
+                    print(f"{s}{' '*(4+max_len-len(s))}{round(100*data[0]/data[1], 1)}%")
 
     ## NO INFO IN OUTPT ##
     if len(output)==1:
         print("\nNo media found. Refer to readme for data structure information.") 
-    else:
+    elif not args.quiet:
         s = "" if len(output)==2 else "s"
         print(f"\nFound {len(output)-1} media item{s}. See: {join(os.getcwd(),results_fpath)}.")
 
@@ -149,6 +152,9 @@ def write_output(output, args):
         print(f"But first try running: {cmd}")
 
 
+########
+# main #
+########
 if __name__=="__main__":
     # installation message 
     if len(sys.argv)==1:
@@ -162,10 +168,11 @@ if __name__=="__main__":
     for s in args.services: scores_total[s] = [0, 0]
 
     output = [["media folder"] + args.services] # init headers
-    
-    # warnings mess up progress bar
+
+    # make iterator    
     vid_dirs = list_video_dirs(args.data, args.numeric)
-    if Quiet.quiet: vid_dirs = tqdm(vid_dirs, ncols=(min(110, get_terminal_size().columns)-2), ascii=" █") # ascii param to fix [?] char showing on windows terminal
+    if not args.quiet: # show progress bar
+        vid_dirs = tqdm(vid_dirs, ncols=(min(110, get_terminal_size().columns)-2), ascii=" -") # ascii param to fix [?] char showing on windows terminal
 
     # go through each subfolder containing data
     for dirpath in vid_dirs:
@@ -194,5 +201,5 @@ if __name__=="__main__":
         assert len(output_line)==len(output[0]), f"line in output wrong length: {len(output_line)}, {len(output[0])}"
         output.append(output_line) # add row to output csv
 
+    Warning().show_warnings() # nothing if quiet
     write_output(output, args)
-   
