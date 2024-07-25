@@ -23,7 +23,7 @@ except ModuleNotFoundError:
         print("\tRunning command (may take a few minutes)")
         os.system(cmd)
 
-        # COMMENT OUT IF ISSUES! temporary fix to deal with bleu being broken in NLTK==3.8.1
+        # COMMENT OUT IF ISSUES! temporary fix to deal with corpus_bleu being broken in NLTK==3.8.1
         try:
             from nltk.translate.bleu_score import corpus_bleu
             tokens = ["this", "is", "a", "test"]
@@ -37,7 +37,6 @@ except ModuleNotFoundError:
             cmd = "pip install --no-warn-script-location -q git+https://github.com/nltk/nltk.git"
             print(f"\tRunning: `{cmd}`")
             os.system(cmd)
-            print("\tFinished.")
         # end temporary fix
 
         print("Installation command complete.", flush=True)
