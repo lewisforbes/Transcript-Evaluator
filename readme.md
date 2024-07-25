@@ -62,10 +62,10 @@ Other flags:
 
 After running, the file [results.csv](/results.csv) is created or overwritten. After installation step 4 it looks like this:
 
-| media folder | service1           | service2         |
-|--------------|--------------------|------------------|
-| video1       | 0.9704595185995624 |                  |
-| video2       | 0.9604261796042618 | 0.95662100456621 |
+| media folder | service1           | service2           |
+|--------------|--------------------|--------------------|
+| video1       | 0.9710920770877944 |                    |
+| video2       | 0.960960960960961  | 0.9572072072072072 |
 
 --------------
 
