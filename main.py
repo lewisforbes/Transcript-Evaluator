@@ -160,6 +160,13 @@ if __name__=="__main__":
     if len(sys.argv)==1:
         msg = "--- Installed correctly! ---"
         print(f"{'-'*len(msg)}\n{msg}\n{'-'*len(msg)}\n")
+        try:
+            tokens = ["this", "is", "a", "test"]
+            corpus_bleu([[tokens]], [tokens])
+        except TypeError:
+            print("Warning: BLEU not available due to a problem with NLTK.")
+            print("         Try run: `pip uninstall nltk -y` then `python main.py`.\n")
+
 
     args = mk_args()
 
@@ -188,8 +195,8 @@ if __name__=="__main__":
             if ai_fpath=="": output_line.append("")
             else: 
                 acc_score = metrics.get_accuracy(human_fpath, ai_fpath, args)
-                if acc_score < 0.3: # arbitrary hard-coded value
-                    warning(f"following files appear completely different: '{human_fpath}' & '{ai_fpath}'.")
+                if acc_score < 0.2: # arbitrary hard-coded value
+                    warning(f"these appear completely different: '{human_fpath[len(args.data):]}' & '{ai_fpath[len(args.data):]}' (score {round(100*acc_score)}%)")
                 
                 # update scores_total
                 current = scores_total[s]

@@ -16,13 +16,34 @@ except ModuleNotFoundError:
         print("\nRunning with `python3` or `py` is known to sometimes not work on managed laptops. Try using `python`.")
 
     # ask user if they want to run pip install
-    cmd = "pip install -r requirements -q"
+    cmd = "pip install -q -r requirements --no-warn-script-location"
     print(f"Installation incomplete.\nRun installation command `{cmd}`?", end="")
     if input(" [y/N] > ").lower().strip() in ["y", "yes"]:
         # yes
-        print("Running command (may take a few minutes)...")
+        print("\tRunning command (may take a few minutes)")
         os.system(cmd)
-    print("Exiting.") # shown after installation command too
+
+        # COMMENT OUT IF ISSUES! temporary fix to deal with bleu being broken in NLTK==3.8.1
+        try:
+            from nltk.translate.bleu_score import corpus_bleu
+            tokens = ["this", "is", "a", "test"]
+            corpus_bleu([[tokens]], [tokens])
+        except ModuleNotFoundError: 
+            pass # nltk didn't install
+        except TypeError:
+            print("Installing most current version of NLTK...")
+            print("\tUninstalling NLTK")
+            os.system("pip uninstall -y -q nltk")
+            cmd = "pip install --no-warn-script-location -q git+https://github.com/nltk/nltk.git"
+            print(f"\tRunning: `{cmd}`")
+            os.system(cmd)
+            print("\tFinished.")
+        # end temporary fix
+
+        print("Installation command complete.", flush=True)
+    else:
+        print("Rerun and enter 'yes' to run installation command.")
+        print("Exiting.", flush=True)
     sys.exit()
 #####################
 
@@ -56,13 +77,14 @@ def get_sub_contents(subtitle_fpath):
                         continue
                     line = sub(r"<[^>]*>", "", line) # remove <tags>
                     line = sub(r"\[[^\]]*\]", "", line) # remove [tags]
-                    line = sub(r"  +", " ", line) # remove multiple spaces
-                    output += line.replace("\n", "") + " "
+                    line = line.replace("\n", "") + " " # remove newlines
+                    output += line
                     continue
                 
                 if "-->" in line:
                     next = True
 
+        output = sub(r" +", " ", output) # remove multiple spaces
         return verify(output)
 
     # utf-8 can lead to error http://bit.ly/3Wjd479
@@ -82,7 +104,7 @@ def contents_different(p1, p2):
 
 # returns true iff a file is a subtitle or text file
 def is_subtitle(fpath):
-    return path.splitext(fpath)[1] in [".txt", ".srt", ".vtt"]
+    return path.splitext(fpath)[1].lower() in [".txt", ".srt", ".vtt"] # .lower() since some file extensions are all caps
 
 # returns subset of os.listdir for which all subdirnames are numeric only when num_only=True
 def list_video_dirs(data_dir, num_only):
@@ -108,7 +130,7 @@ def list_video_dirs(data_dir, num_only):
 def metric_valid(m):
     if m in ["wer", "bleu", "rougeLsum"]: return True
     if len(m)==6 and match(r"rouge[1-9L]", m): return True # m is in [rougeL, rouge1, rouge2, ... , rouge9]
-    return False
+    return False    
 
 # show error message and end execution
 def error(msg):
@@ -140,7 +162,7 @@ class Warning:
     
     # print warnings to console
     def show_warnings(self):
-        if not self.quiet:
+        if (not self.quiet) and (len(self.warnings)>=1):
             print("\nWarnings during execution:")
             for w in self.warnings:
                 print(f"- {w}")
