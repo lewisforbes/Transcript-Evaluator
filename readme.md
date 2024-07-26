@@ -73,3 +73,8 @@ After running, the file [results.csv](/results.csv) is created or overwritten. A
 Subtitles in [video1](data_folder/video1) by [The University of Edinburgh](https://www.youtube.com/watch?v=93Z48ALaBSQ). \
 Subtitles in [video2](data_folder/video2) by [The University of Edinburgh](https://www.youtube.com/watch?v=nq80hb4-klw). \
 Downloaded using [Views4You](https://views4you.com/tools/youtube-subtitles-downloader/).
+
+--------------
+### Very Basic Tests
+Installation tests: `python test.py installation` \
+General tests: `python test.py`
